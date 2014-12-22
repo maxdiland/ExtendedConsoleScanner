@@ -4,6 +4,9 @@ import com.gmail.maxdiland.consolescanner.exception.DialogInterruptionRequestExc
 import com.gmail.maxdiland.consolescanner.exception.NotSuitableInputDataException;
 
 import java.io.File;
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.util.Date;
 import java.util.Scanner;
 
 /**
@@ -68,6 +71,17 @@ public class PrimordialSystemInExtendedScanner implements SystemInExtendedScanne
     public File getNextFile() throws NotSuitableInputDataException, DialogInterruptionRequestException {
         String readLine = getNextLine();
         return new File(readLine);
+    }
+
+
+    @Override
+    public Date getDate(DateFormat format) throws NotSuitableInputDataException, DialogInterruptionRequestException {
+        String readLine = getNextLine();
+        try {
+            return format.parse(readLine);
+        } catch (ParseException e) {
+            throw new NotSuitableInputDataException(e);
+        }
     }
 
     private void checkReadLineForExitRequest(String readLine) throws DialogInterruptionRequestException {
