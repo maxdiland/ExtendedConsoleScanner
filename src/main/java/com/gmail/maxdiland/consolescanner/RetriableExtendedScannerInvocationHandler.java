@@ -1,5 +1,6 @@
 package com.gmail.maxdiland.consolescanner;
 
+import com.gmail.maxdiland.consolescanner.exception.FileNotFoundException;
 import com.gmail.maxdiland.consolescanner.exception.NotSuitableInputDataException;
 
 import java.lang.reflect.InvocationHandler;
@@ -24,7 +25,10 @@ public class RetriableExtendedScannerInvocationHandler implements InvocationHand
             try {
                 return method.invoke(scanner, args);
             } catch (InvocationTargetException e) {
-                if (e.getTargetException().getClass() == NotSuitableInputDataException.class) {
+                Class<?> targetExceptionClass = e.getTargetException().getClass();
+                if (targetExceptionClass == FileNotFoundException.class) {
+                    System.out.println("File does not exist.");
+                } else if (e.getTargetException().getClass() == NotSuitableInputDataException.class) {
                     System.out.println(retryMessage);
                 } else {
                     throw e.getTargetException();

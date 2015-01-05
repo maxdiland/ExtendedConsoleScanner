@@ -1,6 +1,7 @@
 package com.gmail.maxdiland.consolescanner;
 
 import com.gmail.maxdiland.consolescanner.exception.DialogInterruptionRequestException;
+import com.gmail.maxdiland.consolescanner.exception.FileNotFoundException;
 import com.gmail.maxdiland.consolescanner.exception.NotSuitableInputDataException;
 
 import java.io.File;
@@ -58,12 +59,12 @@ public class PrimordialSystemInExtendedScanner implements SystemInExtendedScanne
     }
 
     @Override
-    public File getNextExistingFile() throws NotSuitableInputDataException, DialogInterruptionRequestException {
+    public File getNextExistingFile() throws FileNotFoundException, DialogInterruptionRequestException {
         File file = getNextFile();
         if (file.exists()) {
             return file;
         } else {
-            throw new NotSuitableInputDataException();
+            throw new FileNotFoundException("File does not exist");
         }
     }
 
