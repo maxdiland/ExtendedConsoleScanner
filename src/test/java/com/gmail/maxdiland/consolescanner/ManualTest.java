@@ -15,7 +15,7 @@ public class ManualTest {
                         new RetriableExtendedScannerInvocationHandler(new PrimordialSystemInExtendedScanner(), "Incorrect input. Try again or enter \"exit\" to finish.")
                 );
 
-        System.out.println( scanner.getNextInt() );
+        System.out.println( scanner.getInt() );
         System.out.println( scanner.getDate(new SimpleDateFormat("dd-MM-yyyy")) );
     }
 }

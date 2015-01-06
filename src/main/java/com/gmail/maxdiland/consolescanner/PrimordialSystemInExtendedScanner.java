@@ -16,27 +16,27 @@ import java.util.Scanner;
 public class PrimordialSystemInExtendedScanner implements SystemInExtendedScanner {
 
     private final Scanner scanner;
-    private final String INTERRUPTION_STRING;
+    private String interruptionPhrase = "exit"; //Default interruption phrase
 
     public PrimordialSystemInExtendedScanner() {
-        this("exit");
+        this.scanner = new Scanner(System.in);
     }
 
     public PrimordialSystemInExtendedScanner(String interruptionString) {
-        this.scanner = new Scanner(System.in);
-        INTERRUPTION_STRING = interruptionString;
+        this();
+        interruptionPhrase = interruptionString;
     }
 
     @Override
-    public String getNextLine() throws DialogInterruptionRequestException {
+    public String getString() throws DialogInterruptionRequestException {
         String readLine = scanner.nextLine();
         checkReadLineForExitRequest(readLine);
         return readLine;
     }
 
     @Override
-    public int getNextInt() throws NotSuitableInputDataException, DialogInterruptionRequestException {
-        String readLine = getNextLine();
+    public int getInt() throws NotSuitableInputDataException, DialogInterruptionRequestException {
+        String readLine = getString();
         try {
             return Integer.parseInt(readLine);
         } catch (NumberFormatException nfe) {
@@ -45,13 +45,13 @@ public class PrimordialSystemInExtendedScanner implements SystemInExtendedScanne
     }
 
     @Override
-    public int getNextInt(int allowedMinimumValue, int allowedMaximumValue) throws NotSuitableInputDataException, DialogInterruptionRequestException {
-        if (allowedMinimumValue > allowedMaximumValue) {
+    public int getInt(int minValue, int maxValue) throws NotSuitableInputDataException, DialogInterruptionRequestException {
+        if (minValue > maxValue) {
             throw new IllegalArgumentException("Allowed minimum value shouldn't be greater than allowed maximum value");
         }
 
-        int gottenInt = getNextInt();
-        if (gottenInt >= allowedMinimumValue && gottenInt <= allowedMaximumValue) {
+        int gottenInt = getInt();
+        if (gottenInt >= minValue && gottenInt <= maxValue) {
             return gottenInt;
         } else {
             throw new NotSuitableInputDataException();
@@ -59,8 +59,8 @@ public class PrimordialSystemInExtendedScanner implements SystemInExtendedScanne
     }
 
     @Override
-    public File getNextExistingFile() throws FileNotFoundException, DialogInterruptionRequestException {
-        File file = getNextFile();
+    public File getExistingFile() throws FileNotFoundException, DialogInterruptionRequestException {
+        File file = getFile();
         if (file.exists()) {
             return file;
         } else {
@@ -69,15 +69,15 @@ public class PrimordialSystemInExtendedScanner implements SystemInExtendedScanne
     }
 
     @Override
-    public File getNextFile() throws NotSuitableInputDataException, DialogInterruptionRequestException {
-        String readLine = getNextLine();
+    public File getFile() throws NotSuitableInputDataException, DialogInterruptionRequestException {
+        String readLine = getString();
         return new File(readLine);
     }
 
 
     @Override
     public Date getDate(DateFormat format) throws NotSuitableInputDataException, DialogInterruptionRequestException {
-        String readLine = getNextLine();
+        String readLine = getString();
         try {
             return format.parse(readLine);
         } catch (ParseException e) {
@@ -85,8 +85,15 @@ public class PrimordialSystemInExtendedScanner implements SystemInExtendedScanne
         }
     }
 
+    @Override
+    public <T extends Enum> T getChoice(Class<T> enumClass) {
+        T[] values = enumClass.getEnumConstants();
+        int userChoice = getInt(0, values.length - 1);
+        return values[userChoice];
+    }
+
     private void checkReadLineForExitRequest(String readLine) throws DialogInterruptionRequestException {
-        if (readLine.equalsIgnoreCase(INTERRUPTION_STRING)) {
+        if (readLine.equalsIgnoreCase(interruptionPhrase)) {
             throw new DialogInterruptionRequestException();
         }
     }
